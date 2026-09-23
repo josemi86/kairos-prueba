@@ -68,4 +68,32 @@ class ShowServiceTest {
         assertEquals("summary", show.getSummary());
         assertEquals(2, show.getGenres().size());
     }
+
+    @Test
+    void getShowById_ShouldReturnShow_WhenApiReturnsValidMap() {
+        Long showId = 1L;
+        String expectedUrl = "https://api.tvmaze.com/shows/" + showId;
+
+        Map<String, Object> showMap = new HashMap<>();
+        Map<String, Object> networkMap = new HashMap<>();
+        networkMap.put("name", "networkName");
+
+        showMap.put("id", showId);
+        showMap.put("name", "name");
+        showMap.put("summary", "summary");
+        showMap.put("genres", List.of("genre1", "genre2"));
+        showMap.put("network", networkMap);
+        showMap.put("webChannel", null);
+
+        when(restTemplate.getForObject(eq(expectedUrl), eq(Map.class))).thenReturn(showMap);
+
+        Show result = showService.getShowById(showId);
+
+        assertNotNull(result);
+        assertEquals(showId, result.getId());
+        assertEquals("name", result.getName());
+        assertEquals("networkName", result.getChannel());
+        assertEquals("summary", result.getSummary());
+        assertEquals(2, result.getGenres().size());
+    }
 }

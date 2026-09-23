@@ -44,4 +44,27 @@ class ShowControllerUnitTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("El parámetro 'search_query' es requerido."));
     }
+
+    @Test
+    void getShowById_WithValidId_ShouldReturnOkAndShow() throws Exception {
+        Long showId = 1L;
+        Show expectedShow = new Show(showId, "name", "channel", "summary", List.of("genre1", "genre2"));
+        when(showService.getShowById(showId)).thenReturn(expectedShow);
+
+        mockMvc.perform(get("/api/shows/{show_id}", showId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(showId))
+                .andExpect(jsonPath("$.name").value("name"));
+    }
+
+    @Test
+    void getShowById_WithInvalidId_ShouldReturnBadRequest() throws Exception {
+        Long invalidId = -5L;
+
+        mockMvc.perform(get("/api/shows/{show_id}", invalidId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("El ID del show debe ser un número entero positivo."));
+    }
 }

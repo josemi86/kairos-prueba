@@ -40,4 +40,23 @@ public class ShowService {
         }
         return formattedShows;
     }
+
+    public Show getShowById(Long showId) {
+        String url = "https://api.tvmaze.com/shows/" + showId;
+        Map<String, Object> show = restTemplate.getForObject(url, Map.class);
+        Long id = ((Number) show.get("id")).longValue();
+        String name = (String) show.get("name");
+        String summary = (String) show.get("summary");
+        List<String> genres = (List<String>) show.get("genres");
+        String channel = "Unknown";
+        Map<String, Object> network = (Map<String, Object>) show.get("network");
+        Map<String, Object> webChannel = (Map<String, Object>) show.get("webChannel");
+        if (network != null && network.get("name") != null) {
+            channel = (String) network.get("name");
+        } else if (webChannel != null && webChannel.get("name") != null) {
+            channel = (String) webChannel.get("name");
+        }
+        Show showRecord = new Show(id, name, channel, summary, genres);
+        return showRecord;
+    }
 }
