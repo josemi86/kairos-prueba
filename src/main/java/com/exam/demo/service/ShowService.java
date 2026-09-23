@@ -55,7 +55,9 @@ public class ShowService {
 
     public Show getShowById(Long showId) {
         Show response = showRepository.findById(Long.valueOf(showId));
+        List<ShowComment> comments = commentRepository.findByShowId(showId);
         if(response!=null){
+            response.setComments(comments);
             return response;
         }
         else {
@@ -73,7 +75,7 @@ public class ShowService {
             } else if (webChannel != null && webChannel.get("name") != null) {
                 channel = (String) webChannel.get("name");
             }
-            Show showRecord = new Show(id, name, channel, summary, genres, List.of());
+            Show showRecord = new Show(id, name, channel, summary, genres, comments);
             showRepository.save(showRecord);
             return showRecord;
         }
