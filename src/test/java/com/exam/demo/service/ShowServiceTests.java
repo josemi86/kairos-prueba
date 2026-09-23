@@ -1,12 +1,16 @@
 package com.exam.demo.service;
 
 import com.exam.demo.model.Show;
+import com.exam.demo.model.ShowComment;
+import com.exam.demo.model.http.CommentRequest;
+import com.exam.demo.repository.ShowCommentRepository;
 import com.exam.demo.repository.ShowRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
@@ -31,6 +35,9 @@ class ShowServiceTest {
 
     @Mock
     private ShowRepository showRepository;
+
+    @Mock
+    private ShowCommentRepository commentRepository;
 
     @BeforeEach
     void setUp() {
@@ -99,5 +106,26 @@ class ShowServiceTest {
         assertEquals("networkName", result.getChannel());
         assertEquals("summary", result.getSummary());
         assertEquals(2, result.getGenres().size());
+    }
+
+    @Test
+    void addComment_ShouldSaveComment_WhenRequestIsValid() {
+        CommentRequest request = new CommentRequest();
+        request.setShowId(123L);
+        request.setComment("¡Excelente serie, muy recomendada!");
+        request.setRating(5);
+
+        showService.addComment(request);
+
+        org.mockito.ArgumentCaptor<ShowComment> commentCaptor =
+                org.mockito.ArgumentCaptor.forClass(ShowComment.class);
+
+        Mockito.verify(commentRepository, Mockito.times(1)).save(commentCaptor.capture());
+
+        ShowComment savedComment = commentCaptor.getValue();
+        assertNotNull(savedComment);
+        assertEquals(123L, savedComment.getShowId());
+        assertEquals("¡Excelente serie, muy recomendada!", savedComment.getComment());
+        assertEquals(5, savedComment.getRating());
     }
 }

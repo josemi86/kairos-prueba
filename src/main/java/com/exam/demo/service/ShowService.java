@@ -46,7 +46,7 @@ public class ShowService {
                     } else if (webChannel != null && webChannel.get("name") != null) {
                         channel = (String) webChannel.get("name");
                     }
-                    formattedShows.add(new Show(id, name, channel, summary, genres));
+                    formattedShows.add(new Show(id, name, channel, summary, genres, commentRepository.findByShowId(id)));
                 }
             }
         }
@@ -73,7 +73,7 @@ public class ShowService {
             } else if (webChannel != null && webChannel.get("name") != null) {
                 channel = (String) webChannel.get("name");
             }
-            Show showRecord = new Show(id, name, channel, summary, genres);
+            Show showRecord = new Show(id, name, channel, summary, genres, List.of());
             showRepository.save(showRecord);
             return showRecord;
         }

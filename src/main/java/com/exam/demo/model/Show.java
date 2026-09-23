@@ -14,13 +14,15 @@ public class Show {
     private String channel;
     private String summary;
     private List<String> genres;
+    private List<ShowComment> comments;
 
-    public Show(Long id, String name, String channel, String summary, List<String> genres) {
+    public Show(Long id, String name, String channel, String summary, List<String> genres, List<ShowComment> comments) {
         this.id = id;
         this.name = name;
         this.channel = channel;
         this.summary = summary;
         this.genres = genres;
+        this.comments = comments;
     }
 
     public Long getId() { return id; }
@@ -53,4 +55,11 @@ public class Show {
         this.genres = genres;
     }
 
+    public List<ShowComment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<ShowComment> comments) {
+        this.comments = comments;
+    }
 }

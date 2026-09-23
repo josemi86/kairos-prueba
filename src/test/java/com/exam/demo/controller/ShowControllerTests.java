@@ -1,5 +1,6 @@
 package com.exam.demo.controller;
 import com.exam.demo.model.Show;
+import com.exam.demo.model.ShowComment;
 import com.exam.demo.model.http.CommentRequest;
 import com.exam.demo.service.ShowService;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,8 @@ class ShowControllerUnitTest {
     @Test
     void searchShows_WithValidQuery_ShouldReturnOkAndList() throws Exception {
         String query = "name";
-        List<Show> expectedShows = List.of(new Show(1L, "name", "channel", "summary", List.of("genre1", "genre2")));
+        List<ShowComment> comments = List.of(new ShowComment(1L,"Good", 4));
+        List<Show> expectedShows = List.of(new Show(1L, "name", "channel", "summary", List.of("genre1", "genre2"), comments));
         when(showService.searchShows(query)).thenReturn(expectedShows);
 
         mockMvc.perform(get("/api/shows/search")
@@ -54,7 +56,8 @@ class ShowControllerUnitTest {
     @Test
     void getShowById_WithValidId_ShouldReturnOkAndShow() throws Exception {
         Long showId = 1L;
-        Show expectedShow = new Show(showId, "name", "channel", "summary", List.of("genre1", "genre2"));
+        List<ShowComment> comments = List.of(new ShowComment(1L,"Good", 4));
+        Show expectedShow = new Show(showId, "name", "channel", "summary", List.of("genre1", "genre2"), comments);
         when(showService.getShowById(showId)).thenReturn(expectedShow);
 
         mockMvc.perform(get("/api/shows/{show_id}", showId)
