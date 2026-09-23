@@ -1,7 +1,11 @@
 package com.exam.demo.service;
 
 import com.exam.demo.model.Show;
+import com.exam.demo.model.ShowComment;
+import com.exam.demo.model.http.CommentRequest;
+import com.exam.demo.repository.ShowCommentRepository;
 import com.exam.demo.repository.ShowRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,6 +21,9 @@ public class ShowService {
 
     @Autowired
     private ShowRepository showRepository;
+
+    @Autowired
+    private ShowCommentRepository commentRepository;
 
     public List<Show> searchShows(String searchQuery) {
         String url = "http://api.tvmaze.com/search/shows?q=" + searchQuery;
@@ -70,5 +77,14 @@ public class ShowService {
             showRepository.save(showRecord);
             return showRecord;
         }
+    }
+
+    public void addComment(@Valid CommentRequest request) {
+        ShowComment newComment = new ShowComment(
+                request.getShowId(),
+                request.getComment(),
+                request.getRating()
+        );
+        commentRepository.save(newComment);
     }
 }
