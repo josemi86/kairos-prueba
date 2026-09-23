@@ -1,6 +1,8 @@
 package com.exam.demo.service;
 
 import com.exam.demo.model.Show;
+import com.exam.demo.repository.ShowRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,6 +14,9 @@ import java.util.Map;
 public class ShowService {
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired
+    private ShowRepository showRepository;
 
     public List<Show> searchShows(String searchQuery) {
         String url = "http://api.tvmaze.com/search/shows?q=" + searchQuery;
@@ -42,21 +47,28 @@ public class ShowService {
     }
 
     public Show getShowById(Long showId) {
-        String url = "https://api.tvmaze.com/shows/" + showId;
-        Map<String, Object> show = restTemplate.getForObject(url, Map.class);
-        Long id = ((Number) show.get("id")).longValue();
-        String name = (String) show.get("name");
-        String summary = (String) show.get("summary");
-        List<String> genres = (List<String>) show.get("genres");
-        String channel = "Unknown";
-        Map<String, Object> network = (Map<String, Object>) show.get("network");
-        Map<String, Object> webChannel = (Map<String, Object>) show.get("webChannel");
-        if (network != null && network.get("name") != null) {
-            channel = (String) network.get("name");
-        } else if (webChannel != null && webChannel.get("name") != null) {
-            channel = (String) webChannel.get("name");
+        Show response = showRepository.findById(Long.valueOf(showId));
+        if(response!=null){
+            return response;
         }
-        Show showRecord = new Show(id, name, channel, summary, genres);
-        return showRecord;
+        else {
+            String url = "https://api.tvmaze.com/shows/" + showId;
+            Map<String, Object> show = restTemplate.getForObject(url, Map.class);
+            Long id = ((Number) show.get("id")).longValue();
+            String name = (String) show.get("name");
+            String summary = (String) show.get("summary");
+            List<String> genres = (List<String>) show.get("genres");
+            String channel = "Unknown";
+            Map<String, Object> network = (Map<String, Object>) show.get("network");
+            Map<String, Object> webChannel = (Map<String, Object>) show.get("webChannel");
+            if (network != null && network.get("name") != null) {
+                channel = (String) network.get("name");
+            } else if (webChannel != null && webChannel.get("name") != null) {
+                channel = (String) webChannel.get("name");
+            }
+            Show showRecord = new Show(id, name, channel, summary, genres);
+            showRepository.save(showRecord);
+            return showRecord;
+        }
     }
 }

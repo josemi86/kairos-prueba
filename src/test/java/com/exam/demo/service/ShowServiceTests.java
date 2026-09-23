@@ -1,6 +1,7 @@
 package com.exam.demo.service;
 
 import com.exam.demo.model.Show;
+import com.exam.demo.repository.ShowRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,9 @@ class ShowServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
+
+    @Mock
+    private ShowRepository showRepository;
 
     @BeforeEach
     void setUp() {
